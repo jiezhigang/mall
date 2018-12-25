@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.mall.dao.UserMapper" >
   <resultMap id="BaseResultMap" type="com.mall.pojo.User" >
-    <constructor >
+    <constructor>
       <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="username" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="password" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -19,23 +19,66 @@
     id, username, password, email, phone, question, answer, role, create_time, update_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
+    select
     <include refid="Base_Column_List" />
     from mmall_user
     where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="checkUserName" resultType="int" parameterType="string">
+    select count(1) from mmall_user
+    where username=#{userName}
+  </select>
+  <select id="selectLogin" resultType="com.mall.pojo.User" parameterType="map">
+    select
+    <include refid="Base_Column_List" />
+    from mmall_user
+    where username = #{username}
+    and password = #{password}
+  </select>
+  <select id="checkUserMail" resultType="int" parameterType="string">
+    select count(1) from mmall_user
+    where email=#{email}
+  </select>
+  <select id="selectQuestionByUsername" resultType="string" parameterType="string">
+    select
+    question
+    from mmall_user
+    where username=#{userName}
+  </select>
+  <select id="checkAnswer" resultType="int" parameterType="map">
+    select
+    count(1)
+    from mmall_user
+    where username = #{username}
+    and question = #{question}
+    and answer = #{answer}
+  </select>
+  <select id="checkPassword" resultType="int" parameterType="map">
+    select
+    count(1)
+    from mmall_user
+    where id = #{userid}
+    and password = #{password}
+  </select>
+  <select id="checkEmailByUserId" resultType="int" parameterType="map">
+    select
+    count(1)
+    from mmall_user
+    where id != #{userid}
+    and email = #{email}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from mmall_user
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.mall.pojo.User" >
-    insert into mmall_user (id, username, password, 
-      email, phone, question, 
-      answer, role, create_time, 
+    insert into mmall_user (id, username, password,
+      email, phone, question,
+      answer, role, create_time,
       update_time)
-    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
-      #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{question,jdbcType=VARCHAR}, 
-      #{answer,jdbcType=VARCHAR}, #{role,jdbcType=INTEGER}, now()},
+    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+      #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{question,jdbcType=VARCHAR},
+      #{answer,jdbcType=VARCHAR}, #{role,jdbcType=INTEGER}, now(),
       now())
   </insert>
   <insert id="insertSelective" parameterType="com.mall.pojo.User" >
@@ -150,5 +193,10 @@
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = now()
     where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updatePasswordByUserName" parameterType="map">
+    update mmall_user
+    set password = #{password} , update_time = now()
+    where username = #{username}
   </update>
 </mapper>
